@@ -1,0 +1,8 @@
+1 I need to subset my training data
+2 I need to test my submissions against themselves to get a preliminary score
+3 I should write a program that does this
+4 I should write the mean benchmark
+5 I should compare if weighing different variables in the average, which is better
+6 I should save all of my steps
+7 Clean them up, put them all on github
+
