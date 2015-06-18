@@ -14,14 +14,14 @@ numberOfTestFiles = 8
 namePathForTrainFiles = "data/train.csv"
 namePathForFinalTest = "data/test.csv"
 namePathForOutput = "submissions/sub3"
-stdRange = 2
+stdRange = 1
 
 def main():
 
     os.chdir(os.pardir)
 
     #One of the sets will be exluded from the learn set and used for test
-    testSet = random.randint(0,numberOfTestFiles)
+    testSet = random.randint(0,numberOfTestFiles-1)
     #read in the data, excluding the test set
     print "Reading Data..."
     raw_data = getData(testSet)
@@ -100,14 +100,10 @@ def generateOutput(casual_tree, reg_tree, setPath):
 
     toReturn = pd.DataFrame(columns = ['datetime','count'])
 
-    print 'Date\tPrediction\tActual\n'
     for index, row in data.iterrows():
 	cCount = predictCount(casual_tree, row)
 	rCount = predictCount(reg_tree, row)
 	totalCount = cCount + rCount
-	print row['datetime'],
-	print "\t" + str(totalCount),
-	print "\t" + str(row['count'])
 	toReturn.loc[len(toReturn)] = [ row['datetime'] , totalCount]
 
     return toReturn
@@ -123,18 +119,18 @@ def predictCount(tree, row):
 
 
 def score(predictionDF, answerPath):
-    print len(predictionDF)
     ans = pd.read_csv(answerPath)
     ans['datetime'] = ans.convert_objects(convert_dates='coerce')
-    print len(ans)
+    ans['datetime'] = pd.to_datetime(ans['datetime'])
     data = pd.DataFrame.merge(predictionDF, ans, left_on='datetime', right_on='datetime', how='inner')
-    print len(data)
     total = 0
+    print 'Date\tPrediction\tActual\n'
     for index, row in data.iterrows():
-	print "test"
-	total = total + np.sqaure(np.log(row['count_x'] + 1) - log(row['count_y']+1))
-    print total 
-    score =  np.sqrt(total / len(data)) + "\n"
+	total = total + np.square(np.log(row['count_x'] + 1) - np.log(row['count_y']+1))
+	print row['datetime'],
+	print "\t" + str(row['count_x']),
+	print "\t" + str(row['count_y'])
+    score =  np.sqrt(total / len(data))
     return score
 	
 	
